@@ -7,7 +7,8 @@ import requests
 base_url = "https://www.argos.co.uk"
 urls = ['https://www.argos.co.uk/product/3156700','https://www.argos.co.uk/product/2699749']
 
-def send_text(url, nickname, location)
+def send_text(url, nickname, location):
+  requests.
 
 
 
