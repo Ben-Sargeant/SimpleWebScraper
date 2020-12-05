@@ -1,18 +1,25 @@
-import os
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from dotenv import load_dotenv
+from twilio.rest import Client
+import os
 import time
 import csv
-# import requests
 
 load_dotenv()
 
 base_url = "https://www.argos.co.uk"
-urls = ['https://www.argos.co.uk/product/3156700','https://www.argos.co.uk/product/2699749']
 
-# def send_text(url, nickname, location):
-#  send text messages
+def send_text(url, nickname, location):
+  account_sid = os.environ['TWILIO_SID_KEY']
+  auth_token = os.environ.get('TWILIO_API_KEY')
+  client = Client(account_sid, auth_token)
+
+  message = client.messages \
+                  .create(
+                       body=f"The {nickname} you want is in stock at {location}! Click the link below to order now! {url}",
+                       from_='+19382018827',
+                       to='+447429924911'
+                   )
 
 def searches():
   driver = webdriver.Chrome()
@@ -31,7 +38,6 @@ def searches():
       status = driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/div/div/div[1]/div[3]/div[1]/section[2]/section/div[10]/div[2]/div/div/div[1]/div/div[2]/div[3]/div/div/ol/li[1]/button/div/div/p')
       if status.get_attribute('innerHTML') != "Not in stock here":
         print(f"{row[1]} is in stock!")
-        # pass it to the send text
         # send_text(row[0], row[1], row[2])
       else:
         print(f"{row[1]} is not in stock!")
