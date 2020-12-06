@@ -1,9 +1,15 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from dotenv import load_dotenv
 from twilio.rest import Client
 import os
 import time
 import csv
+
+options = Options()
+options.headless = False
+options.add_argument('--disable-gpu')
+
 
 load_dotenv()
 
@@ -22,7 +28,7 @@ def send_text(url, nickname, location):
                    )
 
 def searches():
-  driver = webdriver.Chrome()
+  driver = webdriver.Chrome(options=options)
   driver.get(base_url)
   driver.find_element_by_id('consent_prompt_submit').click()
 
@@ -32,15 +38,15 @@ def searches():
     for row in csv_reader:
       driver.get(row[0])
       time.sleep(1)
-      driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/div/div/div[1]/div[3]/div[1]/section[2]/section/div[10]/div/form/div/input').send_keys(f'{row[2]}')
-      driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/div/div/div[1]/div[3]/div[1]/section[2]/section/div[10]/div/form/div/button').submit()
+      driver.find_element_by_name('search').send_keys(f'{row[2]}')
+      driver.find_element_by_class_name('SearchStockstyles__SearchButton-sc-1olt28i-4').submit()
       time.sleep(1)
-      status = driver.find_element_by_xpath('/html/body/div[1]/div/div/div[2]/div/div/div[1]/div[3]/div[1]/section[2]/section/div[10]/div[2]/div/div/div[1]/div/div[2]/div[3]/div/div/ol/li[1]/button/div/div/p')
-      if status.get_attribute('innerHTML') != "Not in stock here":
-        print(f"{row[1]} is in stock!")
-        # send_text(row[0], row[1], row[2])
-      else:
+      status = driver.find_element_by_class_name('AvailabilityResultstyles__AvailabilityResultHeadingCollectTitle-sc-1vk7ryk-7')
+      if status.get_attribute('innerHTML') == "Not in stock here":
         print(f"{row[1]} is not in stock!")
+      else:
+        print(f"{row[1]} is in stock!")
+        send_text(row[0], row[1], row[2])
 
 searches()
 
