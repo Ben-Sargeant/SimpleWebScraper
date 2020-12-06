@@ -23,7 +23,7 @@ def send_text(url, nickname, location):
   message = client.messages \
                   .create(
                        body=f"The {nickname} you want is in stock at {location}! Click the link below to order now! {url}",
-                       from_='+19382018827',
+                       from_=os.environ.get('MY_MOBILE'),
                        to='+447429924911'
                    )
 
